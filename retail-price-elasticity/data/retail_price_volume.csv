@@ -1,0 +1,209 @@
+week,brand,price,units_sold
+2025-01-06,Bud Right,18.99,1261
+2025-01-13,Bud Right,18.99,1174
+2025-01-20,Bud Right,18.99,1285
+2025-01-27,Bud Right,18.99,1229
+2025-02-03,Bud Right,18.99,1226
+2025-02-10,Bud Right,15.99,1508
+2025-02-17,Bud Right,18.99,1340
+2025-02-24,Bud Right,18.99,1268
+2025-03-03,Bud Right,18.99,1270
+2025-03-10,Bud Right,18.99,1298
+2025-03-17,Bud Right,18.99,1383
+2025-03-24,Bud Right,18.99,1528
+2025-03-31,Bud Right,18.99,1565
+2025-04-07,Bud Right,15.24,2128
+2025-04-14,Bud Right,18.99,1776
+2025-04-21,Bud Right,18.99,1593
+2025-04-28,Bud Right,18.99,1612
+2025-05-05,Bud Right,18.99,1612
+2025-05-12,Bud Right,15.74,2240
+2025-05-19,Bud Right,15.74,2326
+2025-05-26,Bud Right,18.99,2161
+2025-06-02,Bud Right,18.99,1680
+2025-06-09,Bud Right,19.74,1608
+2025-06-16,Bud Right,19.74,1737
+2025-06-23,Bud Right,19.74,1747
+2025-06-30,Bud Right,19.74,2332
+2025-07-07,Bud Right,19.74,1621
+2025-07-14,Bud Right,17.24,2010
+2025-07-21,Bud Right,17.24,1984
+2025-07-28,Bud Right,19.74,1656
+2025-08-04,Bud Right,19.74,1691
+2025-08-11,Bud Right,19.74,1615
+2025-08-18,Bud Right,19.74,1626
+2025-08-25,Bud Right,15.99,2040
+2025-09-01,Bud Right,15.99,2429
+2025-09-08,Bud Right,19.74,1535
+2025-09-15,Bud Right,19.74,1355
+2025-09-22,Bud Right,19.74,1404
+2025-09-29,Bud Right,19.74,1363
+2025-10-06,Bud Right,19.74,1322
+2025-10-13,Bud Right,16.24,1697
+2025-10-20,Bud Right,16.24,1815
+2025-10-27,Bud Right,19.74,1226
+2025-11-03,Bud Right,19.74,1318
+2025-11-10,Bud Right,19.74,1135
+2025-11-17,Bud Right,19.74,1195
+2025-11-24,Bud Right,19.74,1209
+2025-12-01,Bud Right,19.74,1222
+2025-12-08,Bud Right,17.74,1401
+2025-12-15,Bud Right,17.74,1400
+2025-12-22,Bud Right,19.74,1149
+2025-12-29,Bud Right,19.74,1159
+2025-01-06,Budmeiser,17.99,1011
+2025-01-13,Budmeiser,17.99,1094
+2025-01-20,Budmeiser,15.99,1257
+2025-01-27,Budmeiser,15.99,1290
+2025-02-03,Budmeiser,17.99,1099
+2025-02-10,Budmeiser,17.99,1106
+2025-02-17,Budmeiser,17.99,1130
+2025-02-24,Budmeiser,17.99,1102
+2025-03-03,Budmeiser,17.99,1101
+2025-03-10,Budmeiser,17.99,1140
+2025-03-17,Budmeiser,17.99,1073
+2025-03-24,Budmeiser,15.99,1460
+2025-03-31,Budmeiser,15.99,1501
+2025-04-07,Budmeiser,17.99,1290
+2025-04-14,Budmeiser,17.99,1411
+2025-04-21,Budmeiser,17.99,1346
+2025-04-28,Budmeiser,17.99,1406
+2025-05-05,Budmeiser,14.99,2079
+2025-05-12,Budmeiser,14.99,1940
+2025-05-19,Budmeiser,17.99,1549
+2025-05-26,Budmeiser,17.99,1798
+2025-06-02,Budmeiser,17.99,1503
+2025-06-09,Budmeiser,17.99,1456
+2025-06-16,Budmeiser,17.99,1507
+2025-06-23,Budmeiser,14.74,2201
+2025-06-30,Budmeiser,17.99,1897
+2025-07-07,Budmeiser,17.99,1561
+2025-07-14,Budmeiser,17.99,1537
+2025-07-21,Budmeiser,17.99,1463
+2025-07-28,Budmeiser,18.74,1301
+2025-08-04,Budmeiser,18.74,1387
+2025-08-11,Budmeiser,16.24,1669
+2025-08-18,Budmeiser,16.24,1708
+2025-08-25,Budmeiser,18.74,1321
+2025-09-01,Budmeiser,18.74,1684
+2025-09-08,Budmeiser,18.74,1255
+2025-09-15,Budmeiser,18.74,1182
+2025-09-22,Budmeiser,18.74,1229
+2025-09-29,Budmeiser,18.74,1205
+2025-10-06,Budmeiser,16.74,1494
+2025-10-13,Budmeiser,18.74,1189
+2025-10-20,Budmeiser,18.74,1136
+2025-10-27,Budmeiser,18.74,1176
+2025-11-03,Budmeiser,18.74,1011
+2025-11-10,Budmeiser,18.74,1021
+2025-11-17,Budmeiser,18.74,990
+2025-11-24,Budmeiser,18.74,1004
+2025-12-01,Budmeiser,16.99,1106
+2025-12-08,Budmeiser,18.74,1037
+2025-12-15,Budmeiser,18.74,989
+2025-12-22,Budmeiser,18.74,928
+2025-12-29,Budmeiser,18.74,963
+2025-01-06,Coors Blight,18.49,1063
+2025-01-13,Coors Blight,18.49,1122
+2025-01-20,Coors Blight,18.49,1145
+2025-01-27,Coors Blight,18.49,1256
+2025-02-03,Coors Blight,18.49,1163
+2025-02-10,Coors Blight,15.99,1374
+2025-02-17,Coors Blight,18.49,1148
+2025-02-24,Coors Blight,18.49,1124
+2025-03-03,Coors Blight,18.49,1154
+2025-03-10,Coors Blight,18.49,1189
+2025-03-17,Coors Blight,18.49,1398
+2025-03-24,Coors Blight,15.74,1528
+2025-03-31,Coors Blight,18.49,1492
+2025-04-07,Coors Blight,18.49,1396
+2025-04-14,Coors Blight,18.49,1560
+2025-04-21,Coors Blight,18.49,1547
+2025-04-28,Coors Blight,18.49,1531
+2025-05-05,Coors Blight,18.49,1564
+2025-05-12,Coors Blight,18.49,1537
+2025-05-19,Coors Blight,16.49,1801
+2025-05-26,Coors Blight,16.49,2173
+2025-06-02,Coors Blight,18.49,1538
+2025-06-09,Coors Blight,18.49,1543
+2025-06-16,Coors Blight,18.49,1664
+2025-06-23,Coors Blight,18.49,1788
+2025-06-30,Coors Blight,18.99,2198
+2025-07-07,Coors Blight,16.24,1814
+2025-07-14,Coors Blight,16.24,1841
+2025-07-21,Coors Blight,18.99,1696
+2025-07-28,Coors Blight,18.99,1591
+2025-08-04,Coors Blight,18.99,1523
+2025-08-11,Coors Blight,18.99,1621
+2025-08-18,Coors Blight,18.99,1543
+2025-08-25,Coors Blight,17.49,1713
+2025-09-01,Coors Blight,17.49,1886
+2025-09-08,Coors Blight,18.99,1345
+2025-09-15,Coors Blight,18.99,1308
+2025-09-22,Coors Blight,18.99,1488
+2025-09-29,Coors Blight,18.99,1461
+2025-10-06,Coors Blight,18.99,1300
+2025-10-13,Coors Blight,15.49,1481
+2025-10-20,Coors Blight,18.99,1351
+2025-10-27,Coors Blight,18.99,1164
+2025-11-03,Coors Blight,18.99,1154
+2025-11-10,Coors Blight,18.99,1225
+2025-11-17,Coors Blight,18.99,1145
+2025-11-24,Coors Blight,18.99,1152
+2025-12-01,Coors Blight,18.99,1131
+2025-12-08,Coors Blight,16.24,1304
+2025-12-15,Coors Blight,16.24,1369
+2025-12-22,Coors Blight,18.99,1129
+2025-12-29,Coors Blight,18.99,1177
+2025-01-06,Michelob Ultra Combo Breaker,19.99,983
+2025-01-13,Michelob Ultra Combo Breaker,19.99,952
+2025-01-20,Michelob Ultra Combo Breaker,16.99,1369
+2025-01-27,Michelob Ultra Combo Breaker,16.99,1404
+2025-02-03,Michelob Ultra Combo Breaker,19.99,999
+2025-02-10,Michelob Ultra Combo Breaker,19.99,945
+2025-02-17,Michelob Ultra Combo Breaker,19.99,1013
+2025-02-24,Michelob Ultra Combo Breaker,19.99,1034
+2025-03-03,Michelob Ultra Combo Breaker,19.99,1178
+2025-03-10,Michelob Ultra Combo Breaker,19.99,1161
+2025-03-17,Michelob Ultra Combo Breaker,16.49,1547
+2025-03-24,Michelob Ultra Combo Breaker,19.99,1183
+2025-03-31,Michelob Ultra Combo Breaker,19.99,1140
+2025-04-07,Michelob Ultra Combo Breaker,19.99,1215
+2025-04-14,Michelob Ultra Combo Breaker,19.99,1297
+2025-04-21,Michelob Ultra Combo Breaker,16.49,2069
+2025-04-28,Michelob Ultra Combo Breaker,19.99,1275
+2025-05-05,Michelob Ultra Combo Breaker,19.99,1300
+2025-05-12,Michelob Ultra Combo Breaker,19.99,1223
+2025-05-19,Michelob Ultra Combo Breaker,19.99,1367
+2025-05-26,Michelob Ultra Combo Breaker,19.99,1649
+2025-06-02,Michelob Ultra Combo Breaker,19.99,1365
+2025-06-09,Michelob Ultra Combo Breaker,17.99,1684
+2025-06-16,Michelob Ultra Combo Breaker,17.99,1757
+2025-06-23,Michelob Ultra Combo Breaker,19.99,1297
+2025-06-30,Michelob Ultra Combo Breaker,19.99,1774
+2025-07-07,Michelob Ultra Combo Breaker,19.99,1568
+2025-07-14,Michelob Ultra Combo Breaker,19.99,1315
+2025-07-21,Michelob Ultra Combo Breaker,17.49,1744
+2025-07-28,Michelob Ultra Combo Breaker,18.24,1831
+2025-08-04,Michelob Ultra Combo Breaker,20.99,1421
+2025-08-11,Michelob Ultra Combo Breaker,20.99,1143
+2025-08-18,Michelob Ultra Combo Breaker,20.99,1172
+2025-08-25,Michelob Ultra Combo Breaker,20.99,1194
+2025-09-01,Michelob Ultra Combo Breaker,20.99,1507
+2025-09-08,Michelob Ultra Combo Breaker,20.99,1075
+2025-09-15,Michelob Ultra Combo Breaker,20.99,1093
+2025-09-22,Michelob Ultra Combo Breaker,17.99,1557
+2025-09-29,Michelob Ultra Combo Breaker,17.99,1497
+2025-10-06,Michelob Ultra Combo Breaker,20.99,1017
+2025-10-13,Michelob Ultra Combo Breaker,20.99,1007
+2025-10-20,Michelob Ultra Combo Breaker,20.99,927
+2025-10-27,Michelob Ultra Combo Breaker,20.99,961
+2025-11-03,Michelob Ultra Combo Breaker,20.99,941
+2025-11-10,Michelob Ultra Combo Breaker,16.74,1525
+2025-11-17,Michelob Ultra Combo Breaker,16.74,1443
+2025-11-24,Michelob Ultra Combo Breaker,20.99,932
+2025-12-01,Michelob Ultra Combo Breaker,20.99,948
+2025-12-08,Michelob Ultra Combo Breaker,20.99,901
+2025-12-15,Michelob Ultra Combo Breaker,20.99,905
+2025-12-22,Michelob Ultra Combo Breaker,20.99,890
+2025-12-29,Michelob Ultra Combo Breaker,20.99,901
