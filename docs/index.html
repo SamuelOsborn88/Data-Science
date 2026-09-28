@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beer Price Simulator</title>
+<meta name="description" content="Interactive price elasticity simulator: move the price and see projected weekly volume and revenue for four (synthetic) beer brands.">
+<style>
+  :root {
+    --page: #f3f2ee; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+    --gain: #2a78d6; --loss: #e34948; --band: rgba(11,11,11,0.07); --focus: #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page: #111110; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+      --gain: #3987e5; --loss: #e66767; --band: rgba(255,255,255,0.08); --focus: #3987e5;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #111110; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --gain: #3987e5; --loss: #e66767; --band: rgba(255,255,255,0.08); --focus: #3987e5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 48px; }
+  header h1 { font-size: 28px; line-height: 1.2; margin: 0 0 6px; }
+  header p { margin: 0; color: var(--ink-2); max-width: 720px; }
+  .note {
+    display: inline-block; margin-top: 12px; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--ink-2); font-size: 13px; background: var(--surface);
+  }
+  a { color: var(--s1); }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; margin-top: 16px;
+  }
+  /* controls */
+  .controls { display: flex; flex-wrap: wrap; gap: 20px 32px; align-items: flex-end; }
+  .control-label { display: block; font-size: 13px; color: var(--ink-2); margin-bottom: 8px; font-weight: 600; }
+  .brands { display: flex; flex-wrap: wrap; gap: 6px; }
+  .brand-btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 8px;
+    border: 1px solid var(--border); background: transparent; color: var(--ink); font: inherit; font-size: 14px;
+    cursor: pointer;
+  }
+  .brand-btn .key { width: 14px; height: 3px; border-radius: 2px; }
+  .brand-btn[aria-pressed="true"] { background: var(--page); border-color: var(--ink-2); font-weight: 600; }
+  .brand-btn:focus-visible, .reset:focus-visible, input[type=range]:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .slider-wrap { flex: 1 1 320px; min-width: 260px; }
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  input[type=range] { flex: 1; accent-color: var(--s1); height: 28px; }
+  .slider-value { min-width: 64px; text-align: right; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ticks { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding: 0 2px; }
+  .reset {
+    padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: transparent;
+    color: var(--ink-2); font: inherit; font-size: 13px; cursor: pointer;
+  }
+  /* KPI tiles */
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .kpi .label { font-size: 13px; color: var(--ink-2); }
+  .kpi .value { font-size: 26px; font-weight: 700; line-height: 1.25; margin-top: 4px; }
+  .kpi .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .arrow { font-size: 16px; margin-right: 4px; }
+  .arrow.up { color: var(--gain); } .arrow.down { color: var(--loss); }
+  .verdict { font-size: 17px; margin: 0; }
+  .verdict strong { font-weight: 700; }
+  /* charts */
+  .chart-title { font-size: 16px; font-weight: 700; margin: 0; }
+  .chart-sub { font-size: 13px; color: var(--ink-2); margin: 2px 0 10px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin-bottom: 6px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { display: inline-block; width: 16px; height: 0; border-top: 2px solid; }
+  .legend i.dashed { border-top-style: dashed; }
+  .legend i.band { height: 10px; border: 0; background: var(--band); }
+  .chart { position: relative; width: 100%; }
+  svg { display: block; width: 100%; overflow: visible; }
+  svg text { font-family: inherit; }
+  .tooltip {
+    position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    opacity: 0; transition: opacity 80ms; min-width: 150px; z-index: 5;
+  }
+  .tooltip .tt-head { color: var(--ink-2); margin-bottom: 4px; }
+  .tooltip .tt-row { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .tooltip .tt-row i { width: 12px; height: 0; border-top: 2px solid; }
+  .tooltip .tt-row b { font-variant-numeric: tabular-nums; }
+  .tooltip .tt-row span { color: var(--ink-2); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .two-col .card { margin-top: 16px; }
+  details { margin-top: 16px; }
+  summary { cursor: pointer; color: var(--ink-2); font-size: 14px; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 10px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 6px 10px; border-bottom: 1px solid var(--grid); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--ink-2); font-weight: 600; }
+  .method p { color: var(--ink-2); margin: 8px 0 0; max-width: 780px; }
+  .method h2 { font-size: 16px; margin: 0; }
+  footer { margin-top: 24px; font-size: 13px; color: var(--muted); }
+  @media (max-width: 860px) {
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .two-col { grid-template-columns: 1fr; gap: 0; }
+  }
+  @media (max-width: 420px) {
+    header h1 { font-size: 23px; }
+    .kpi .value { font-size: 21px; }
+    .card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Beer Price Simulator</h1>
+    <p>Pick a brand and move the price slider to see how weekly volume and revenue would respond, based on price elasticities estimated from a year of weekly sales.</p>
+    <span class="note">Synthetic data · parody brand names · <a href="https://github.com/SamuelOsborn88/Data-Science/tree/main/retail-price-elasticity">see the full analysis</a></span>
+  </header>
+
+  <section class="card controls" aria-label="Scenario controls">
+    <div>
+      <span class="control-label" id="brand-label">Brand</span>
+      <div class="brands" id="brands" role="group" aria-labelledby="brand-label"></div>
+    </div>
+    <div class="slider-wrap">
+      <label class="control-label" for="price">Price change</label>
+      <div class="slider-row">
+        <input type="range" id="price" min="-20" max="20" step="1" value="5">
+        <output class="slider-value" id="price-out" for="price">+5%</output>
+        <button class="reset" id="reset" type="button">Reset</button>
+      </div>
+      <div class="ticks" aria-hidden="true"><span>−20%</span><span>−10%</span><span>0</span><span>+10%</span><span>+20%</span></div>
+    </div>
+  </section>
+
+  <section class="kpis" aria-live="polite">
+    <div class="kpi"><div class="label">Price elasticity</div><div class="value" id="k-e"></div><div class="sub" id="k-e-sub"></div></div>
+    <div class="kpi"><div class="label">New average price</div><div class="value" id="k-p"></div><div class="sub" id="k-p-sub"></div></div>
+    <div class="kpi"><div class="label">Weekly units</div><div class="value" id="k-u"></div><div class="sub" id="k-u-sub"></div></div>
+    <div class="kpi"><div class="label">Weekly revenue</div><div class="value" id="k-r"></div><div class="sub" id="k-r-sub"></div></div>
+  </section>
+
+  <section class="card"><p class="verdict" id="verdict"></p></section>
+
+  <section class="card">
+    <h2 class="chart-title">Revenue change at every price change</h2>
+    <p class="chart-sub">Each line is a brand. Lines that rise to the right are brands that gain revenue from a price increase. The shaded band is the selected brand's 95% confidence range.</p>
+    <div class="legend" id="legend-rev"></div>
+    <div class="chart" id="chart-rev"></div>
+  </section>
+
+  <div class="two-col">
+    <section class="card">
+      <h2 class="chart-title">Weekly units: actual vs. at your price</h2>
+      <p class="chart-sub" id="units-sub"></p>
+      <div class="legend" id="legend-units"></div>
+      <div class="chart" id="chart-units"></div>
+    </section>
+    <section class="card">
+      <h2 class="chart-title">Weekly shelf price: actual vs. at your price</h2>
+      <p class="chart-sub">Dips are promotions. Your change is applied to every week.</p>
+      <div class="legend" id="legend-price"></div>
+      <div class="chart" id="chart-price"></div>
+    </section>
+  </div>
+
+  <details class="card">
+    <summary>Show scenario as a table (all brands)</summary>
+    <div class="table-wrap"><table id="table"></table></div>
+  </details>
+
+  <section class="card method">
+    <h2>How this works</h2>
+    <p><strong>Elasticity</strong> is the % change in units sold for a 1% change in price. Brands below −1 are <em>elastic</em> (a price increase loses revenue); brands between 0 and −1 are <em>inelastic</em> (a price increase gains revenue).</p>
+    <p>Elasticities come from a log-log regression, <code>ln(units) = brand + week + elasticity × ln(price)</code>, where the week term removes seasonality and holiday effects shared by all brands (R² = <span id="r2"></span>). For a price change <em>p</em>, units scale by (1+p)<sup>e</sup> and revenue by (1+p)<sup>1+e</sup>. Projections assume other brands' prices stay the same, and they're most reliable within the ±20% range seen in the data.</p>
+  </section>
+
+  <footer>Built with Python (pandas, NumPy) for the analysis and plain HTML, CSS and JavaScript for this page. <a href="https://github.com/SamuelOsborn88/Data-Science">Source on GitHub</a>.</footer>
+</main>
+
+<script src="data.js"></script>
+<script>
+(() => {
+  const DATA = window.DASHBOARD_DATA;
+  const BRANDS = DATA.brands;
+  const COLOR_VARS = ["--s1", "--s2", "--s3", "--s4"];      // fixed brand -> colour order
+  const NS = "http://www.w3.org/2000/svg";
+  const state = { brand: 0, pct: 5 };
+  const slug = name => name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+  const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const color = i => css(COLOR_VARS[i]);
+  const fmtPct = (v, d = 1) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(d) + "%";
+  const fmtMoney = v => (Math.round(v) < 0 ? "−" : "") + "$" + Math.abs(Math.round(v)).toLocaleString("en-US");
+  const fmtNum = v => Math.round(v).toLocaleString("en-US");
+  const fmtE = v => (v < 0 ? "−" : "") + Math.abs(v).toFixed(2);
+  const mean = a => a.reduce((s, x) => s + x, 0) / a.length;
+  const unitsFactor = (p, e) => Math.pow(1 + p, e);
+  const revFactor = (p, e) => Math.pow(1 + p, 1 + e);
+  const fmtWeek = s => new Date(s + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+  BRANDS.forEach(b => {
+    b.avgPrice = mean(b.price);
+    b.avgUnits = mean(b.units);
+    b.avgRevenue = mean(b.price.map((p, i) => p * b.units[i]));
+  });
+  document.getElementById("r2").textContent = DATA.r2.toFixed(2);
+
+  // shareable scenario in the URL, e.g. #brand=coors-blight&price=10
+  const hash = new URLSearchParams(location.hash.slice(1));
+  const hb = BRANDS.findIndex(b => slug(b.name) === hash.get("brand"));
+  if (hb >= 0) state.brand = hb;
+  const hp = parseInt(hash.get("price"), 10);
+  if (Number.isFinite(hp)) state.pct = Math.max(-20, Math.min(20, hp));
+  document.getElementById("price").value = state.pct;
+
+  // ---- controls ---------------------------------------------------------------
+  const brandBox = document.getElementById("brands");
+  BRANDS.forEach((b, i) => {
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "brand-btn";
+    const key = document.createElement("span"); key.className = "key"; key.style.background = `var(${COLOR_VARS[i]})`;
+    btn.append(key, document.createTextNode(b.name));
+    btn.addEventListener("click", () => { state.brand = i; render(); });
+    brandBox.append(btn);
+  });
+  const slider = document.getElementById("price");
+  slider.addEventListener("input", () => { state.pct = +slider.value; render(); });
+  document.getElementById("reset").addEventListener("click", () => { state.pct = 0; slider.value = 0; render(); });
+
+  // ---- tiny SVG line-chart helper -------------------------------------------------
+  function el(tag, attrs = {}, parent) {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    if (parent) parent.append(n);
+    return n;
+  }
+  function niceTicks(min, max, count) {
+    const span = max - min || 1;
+    const raw = span / count, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw);
+    const ticks = [];
+    for (let t = Math.ceil(min / step) * step; t <= max + 1e-9; t += step) ticks.push(+t.toFixed(10));
+    return ticks;
+  }
+
+  /* opts: { xs, series:[{name,values,color,width,dash,opacity}], band:{lo,hi}, xFormat, yFormat,
+             tipX, tipY, markerX, markerLabel, height, endLabels, zeroLine, stepped } */
+  function lineChart(container, opts) {
+    container.textContent = "";
+    const W = Math.max(container.clientWidth, 280), H = opts.height || 260;
+    const m = { t: 12, r: opts.endLabels ? 132 : 14, b: 30, l: 52 };
+    if (W < 520 && opts.endLabels) m.r = 14;
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const xs = opts.xs;
+    const all = opts.series.flatMap(s => s.values).concat(opts.band ? opts.band.lo.concat(opts.band.hi) : []);
+    let yMin = Math.min(...all), yMax = Math.max(...all);
+    if (opts.zeroLine) { yMin = Math.min(yMin, 0); yMax = Math.max(yMax, 0); }
+    const pad = (yMax - yMin) * 0.08 || 1; yMin -= pad; yMax += pad;
+    const x = i => m.l + (xs.length === 1 ? 0 : (i / (xs.length - 1)) * iw);
+    const y = v => m.t + ih - ((v - yMin) / (yMax - yMin)) * ih;
+
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, height: H, role: "img", "aria-label": opts.ariaLabel || "" }, container);
+    const g = el("g", {}, svg);
+    niceTicks(yMin, yMax, opts.yTickCount || 5).forEach(t => {
+      el("line", { x1: m.l, x2: m.l + iw, y1: y(t), y2: y(t), stroke: css("--grid"), "stroke-width": 1 }, g);
+      const lbl = el("text", { x: m.l - 8, y: y(t) + 4, "text-anchor": "end", "font-size": 12, fill: css("--ink-2") }, g);
+      lbl.textContent = opts.yFormat(t);
+    });
+    if (opts.zeroLine) el("line", { x1: m.l, x2: m.l + iw, y1: y(0), y2: y(0), stroke: css("--axis"), "stroke-width": 1.5 }, g);
+    el("line", { x1: m.l, x2: m.l + iw, y1: m.t + ih, y2: m.t + ih, stroke: css("--axis"), "stroke-width": 1 }, g);
+    (opts.xTicks || []).forEach(i => {
+      const lbl = el("text", { x: x(i), y: H - 8, "text-anchor": "middle", "font-size": 12, fill: css("--ink-2") }, g);
+      lbl.textContent = opts.xFormat(xs[i]);
+    });
+
+    const path = vals => vals.map((v, i) => {
+      if (!opts.stepped || i === 0) return `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`;
+      return `H${x(i).toFixed(1)}V${y(v).toFixed(1)}`;
+    }).join("");
+    if (opts.band) {
+      const d = opts.band.hi.map((v, i) => `${i ? "L" : "M"}${x(i)},${y(v)}`).join("") +
+        opts.band.lo.map((v, i) => `L${x(opts.band.lo.length - 1 - i)},${y(opts.band.lo[opts.band.lo.length - 1 - i])}`).join("") + "Z";
+      el("path", { d, fill: css("--band"), stroke: "none" }, g);
+    }
+    opts.series.forEach(s => el("path", {
+      d: path(s.values), fill: "none", stroke: s.color, "stroke-width": s.width || 2, opacity: s.opacity ?? 1,
+      "stroke-linejoin": "round", "stroke-linecap": "round", "stroke-dasharray": s.dash || "none",
+    }, g));
+
+    if (opts.markerX != null) {
+      const mx = x(opts.markerX);
+      el("line", { x1: mx, x2: mx, y1: m.t, y2: m.t + ih, stroke: css("--ink-2"), "stroke-width": 1 }, g);
+      opts.series.filter(s => s.markerDot).forEach(s => el("circle", {
+        cx: mx, cy: y(s.values[opts.markerX]), r: 5, fill: s.color, stroke: css("--surface"), "stroke-width": 2 }, g));
+      if (opts.markerLabel) {
+        const t = el("text", { x: Math.min(Math.max(mx, m.l + 30), m.l + iw - 30), y: m.t - 2, "text-anchor": "middle",
+          "font-size": 12, "font-weight": 600, fill: css("--ink") }, g);
+        t.textContent = opts.markerLabel;
+      }
+    }
+    if (opts.endLabels && W >= 520) {
+      // direct labels at the right end, nudged apart so they never overlap
+      const items = opts.series.map(s => ({ s, y: y(s.values[s.values.length - 1]) })).sort((a, b) => a.y - b.y);
+      for (let i = 1; i < items.length; i++) items[i].y = Math.max(items[i].y, items[i - 1].y + 16);
+      items.forEach(({ s, y: ly }) => {
+        const t = el("text", { x: m.l + iw + 8, y: ly + 4, "font-size": 12, fill: css("--ink-2"),
+          "font-weight": s.width > 2 ? 700 : 400 }, g);
+        t.textContent = s.name.length > 17 ? s.name.slice(0, 16) + "…" : s.name;
+      });
+    }
+
+    // crosshair + tooltip listing every series at the hovered x
+    const tip = document.createElement("div"); tip.className = "tooltip"; container.append(tip);
+    const cross = el("line", { y1: m.t, y2: m.t + ih, stroke: css("--muted"), "stroke-width": 1, opacity: 0 }, svg);
+    const hit = el("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent", tabindex: 0,
+      "aria-label": "Chart values, use left and right arrow keys" }, svg);
+    let focusIdx = null;
+    const show = i => {
+      i = Math.max(0, Math.min(xs.length - 1, i));
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", 1);
+      tip.textContent = "";
+      const head = document.createElement("div"); head.className = "tt-head"; head.textContent = opts.tipX(xs[i]); tip.append(head);
+      opts.series.forEach(s => {
+        const row = document.createElement("div"); row.className = "tt-row";
+        const key = document.createElement("i"); key.style.borderTopColor = s.color;
+        if (s.dash) key.style.borderTopStyle = "dashed";
+        const val = document.createElement("b"); val.textContent = opts.tipY(s.values[i], s);
+        const name = document.createElement("span"); name.textContent = s.name;
+        row.append(key, val, name); tip.append(row);
+      });
+      tip.style.opacity = 1;
+      const tw = tip.offsetWidth, px = x(i) / W * container.clientWidth;
+      tip.style.left = (px + 14 + tw > container.clientWidth ? px - tw - 14 : px + 14) + "px";
+      tip.style.top = "8px";
+      focusIdx = i;
+    };
+    const hide = () => { tip.style.opacity = 0; cross.setAttribute("opacity", 0); };
+    const idxFromEvent = ev => {
+      const r = svg.getBoundingClientRect();
+      const sx = (ev.clientX - r.left) * (W / r.width);
+      return Math.round(((sx - m.l) / iw) * (xs.length - 1));
+    };
+    hit.addEventListener("pointermove", ev => show(idxFromEvent(ev)));
+    hit.addEventListener("pointerdown", ev => show(idxFromEvent(ev)));
+    hit.addEventListener("pointerleave", hide);
+    hit.addEventListener("focus", () => show(focusIdx ?? (opts.markerX ?? 0)));
+    hit.addEventListener("blur", hide);
+    hit.addEventListener("keydown", ev => {
+      if (ev.key === "ArrowRight") { show((focusIdx ?? 0) + 1); ev.preventDefault(); }
+      if (ev.key === "ArrowLeft") { show((focusIdx ?? 0) - 1); ev.preventDefault(); }
+    });
+  }
+
+  function legend(id, items) {
+    const box = document.getElementById(id); box.textContent = "";
+    items.forEach(it => {
+      const s = document.createElement("span");
+      const k = document.createElement("i");
+      if (it.band) k.className = "band"; else { k.style.borderTopColor = it.color; if (it.dash) k.className = "dashed"; }
+      s.append(k, document.createTextNode(it.name)); box.append(s);
+    });
+  }
+
+  // ---- render --------------------------------------------------------------------
+  function render() {
+    const i = state.brand, b = BRANDS[i], p = state.pct / 100, e = b.elasticity;
+    [...brandBox.children].forEach((btn, j) => btn.setAttribute("aria-pressed", j === i));
+    history.replaceState(null, "", `#brand=${slug(b.name)}&price=${state.pct}`);
+    document.getElementById("price-out").textContent = state.pct === 0 ? "0%" : fmtPct(state.pct, 0);
+
+    const uF = unitsFactor(p, e), rF = revFactor(p, e);
+    const rLo = revFactor(p, b.ciLow), rHi = revFactor(p, b.ciHigh);
+    const arrow = v => v > 0.0005 ? '<span class="arrow up" aria-hidden="true">▲</span>' : v < -0.0005 ? '<span class="arrow down" aria-hidden="true">▼</span>' : "";
+
+    document.getElementById("k-e").textContent = fmtE(e);
+    document.getElementById("k-e-sub").textContent = `${Math.abs(e) > 1 ? "Elastic" : "Inelastic"} · 95% CI ${fmtE(b.ciLow)} to ${fmtE(b.ciHigh)}`;
+    document.getElementById("k-p").textContent = "$" + (b.avgPrice * (1 + p)).toFixed(2);
+    document.getElementById("k-p-sub").textContent = `from $${b.avgPrice.toFixed(2)} average`;
+    document.getElementById("k-u").innerHTML = arrow(uF - 1) + fmtPct((uF - 1) * 100);
+    document.getElementById("k-u-sub").textContent = `${fmtNum(b.avgUnits * uF)} vs ${fmtNum(b.avgUnits)} per week`;
+    document.getElementById("k-r").innerHTML = arrow(rF - 1) + fmtPct((rF - 1) * 100);
+    const [lo, hi] = [rLo, rHi].map(v => (v - 1) * 100).sort((a, c) => a - c);
+    document.getElementById("k-r-sub").textContent = `${fmtMoney(b.avgRevenue * (rF - 1))}/week · range ${fmtPct(lo)} to ${fmtPct(hi)}`;
+
+    const verdict = document.getElementById("verdict"); verdict.textContent = "";
+    const strong = t => { const s = document.createElement("strong"); s.textContent = t; return s; };
+    if (state.pct === 0) {
+      verdict.append("Move the slider to test a price change for ", strong(b.name), ".");
+    } else {
+      const dir = state.pct > 0 ? "raising" : "cutting";
+      const good = rF > 1;
+      verdict.append(
+        `${dir[0].toUpperCase() + dir.slice(1)} ${b.name}'s price by ${Math.abs(state.pct)}% would `,
+        strong(`${good ? "increase" : "reduce"} weekly revenue by about ${fmtMoney(Math.abs(b.avgRevenue * (rF - 1)))} (${fmtPct((rF - 1) * 100)})`),
+        `, with volume ${uF > 1 ? "up" : "down"} ${Math.abs((uF - 1) * 100).toFixed(1)}%. `,
+        Math.abs(e) > 1
+          ? "This brand is elastic: shoppers respond strongly to price, so price cuts and promotions tend to pay off more than increases."
+          : "This brand is inelastic: shoppers are fairly loyal on price, so a modest increase tends to grow revenue.");
+      if (Math.sign(lo) !== Math.sign(hi)) verdict.append(" The confidence range crosses zero, so treat the direction as uncertain.");
+    }
+
+    // chart 1: revenue change vs price change, all brands
+    const pcts = Array.from({ length: 41 }, (_, k) => k - 20);
+    const series = BRANDS.map((bb, j) => ({
+      name: bb.name, color: color(j), width: j === i ? 3 : 2, opacity: j === i ? 1 : 0.45, markerDot: j === i,
+      values: pcts.map(q => (revFactor(q / 100, bb.elasticity) - 1) * 100),
+    }));
+    series.push(series.splice(i, 1)[0]);                           // draw selected brand on top
+    lineChart(document.getElementById("chart-rev"), {
+      xs: pcts, series, height: 300, zeroLine: true, endLabels: true, yTickCount: 7,
+      band: { lo: pcts.map(q => (revFactor(q / 100, b.ciLow) - 1) * 100), hi: pcts.map(q => (revFactor(q / 100, b.ciHigh) - 1) * 100) },
+      xTicks: [0, 10, 20, 30, 40], xFormat: v => v === 0 ? "0" : fmtPct(v, 0),
+      yFormat: v => v === 0 ? "0" : fmtPct(v, 0), markerX: state.pct + 20,
+      markerLabel: state.pct === 0 ? "" : "Your price " + fmtPct(state.pct, 0),
+      tipX: v => "Price " + (v === 0 ? "unchanged" : fmtPct(v, 0)), tipY: v => fmtPct(v),
+      ariaLabel: "Line chart of revenue change for each brand across price changes from minus 20 to plus 20 percent",
+    });
+    legend("legend-rev", BRANDS.map((bb, j) => ({ name: bb.name, color: color(j) })).concat([{ name: `${b.name} 95% range`, band: true }]));
+
+    // charts 2 & 3: weekly actual vs scenario for the selected brand
+    const n = b.weeks.length, wkTicks = [0, Math.round(n / 4), Math.round(n / 2), Math.round(3 * n / 4), n - 1];
+    document.getElementById("units-sub").textContent =
+      `${b.name}: every week's volume scaled by ${fmtPct((uF - 1) * 100)}. Seasonality and promotion spikes are kept.`;
+    lineChart(document.getElementById("chart-units"), {
+      xs: b.weeks, height: 220, xTicks: wkTicks, xFormat: fmtWeek, yFormat: fmtNum,
+      series: [{ name: "Actual", values: b.units, color: css("--muted"), width: 2 },
+               { name: "At your price", values: b.units.map(u => u * uF), color: color(i), width: 2, dash: state.pct === 0 ? "4 4" : "" }],
+      tipX: v => "Week of " + fmtWeek(v), tipY: v => fmtNum(v) + " units",
+      ariaLabel: `Weekly units for ${b.name}, actual and projected`,
+    });
+    legend("legend-units", [{ name: "Actual", color: css("--muted") }, { name: "At your price", color: color(i) }]);
+    lineChart(document.getElementById("chart-price"), {
+      xs: b.weeks, height: 220, xTicks: wkTicks, xFormat: fmtWeek, yFormat: v => "$" + v.toFixed(0), stepped: true,
+      series: [{ name: "Actual", values: b.price, color: css("--muted"), width: 2 },
+               { name: "At your price", values: b.price.map(v => v * (1 + p)), color: color(i), width: 2, dash: state.pct === 0 ? "4 4" : "" }],
+      tipX: v => "Week of " + fmtWeek(v), tipY: v => "$" + v.toFixed(2),
+      ariaLabel: `Weekly shelf price for ${b.name}, actual and with your change`,
+    });
+    legend("legend-price", [{ name: "Actual", color: css("--muted") }, { name: "At your price", color: color(i) }]);
+
+    // table view
+    const table = document.getElementById("table"); table.textContent = "";
+    const head = table.insertRow();
+    ["Brand", "Elasticity", "Avg price", "Units / week", "Revenue / week", "Revenue change"].forEach(h => {
+      const th = document.createElement("th"); th.textContent = h; head.append(th);
+    });
+    BRANDS.forEach(bb => {
+      const r = table.insertRow(), rf = revFactor(p, bb.elasticity), uf = unitsFactor(p, bb.elasticity);
+      [bb.name, fmtE(bb.elasticity), "$" + (bb.avgPrice * (1 + p)).toFixed(2), fmtNum(bb.avgUnits * uf),
+       fmtMoney(bb.avgRevenue * rf), fmtPct((rf - 1) * 100)].forEach(v => { r.insertCell().textContent = v; });
+    });
+  }
+
+  render();
+  let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(render, 120); });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", render);
+})();
+</script>
+</body>
+</html>

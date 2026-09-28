@@ -6,6 +6,8 @@ This project estimates the **price elasticity of demand** for four brands from a
 
 > **The data is synthetic.** The brand names are parodies, and the numbers come from `generate_data.py`, which simulates realistic weekly retail behaviour (seasonal demand, holiday spikes, promotions, a mid-year price increase, random noise) using a known "true" elasticity for each brand. That means the analysis can be checked against the right answer, which is impossible with real data.
 
+**[▶ Interactive price simulator](https://samuelosborn88.github.io/Data-Science/)**: pick a brand, move the price slider, and see projected weekly volume and revenue with confidence ranges.
+
 ## Key findings
 
 | Brand | Estimated elasticity (95% CI) | True value | Type | Revenue impact of +5% price |
@@ -73,6 +75,7 @@ python analyze.py            # prints the summary and writes outputs/ and figure
 - `outputs/elasticity_summary.csv`: one row per brand with both estimates, confidence intervals, true values and revenue impact
 - `outputs/weekly_with_elasticity.csv`: the weekly data with week-over-week % changes and naive elasticities
 - `figures/`: the four charts above
+- `../docs/data.js`: the data for the [interactive dashboard](../docs/index.html), which is regenerated on every run
 
 ## Limitations and next steps
 
